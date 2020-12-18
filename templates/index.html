@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index filestorage</title>
+</head>
+<body>
+    <p>List of files on server</p>
+    <a href="/newfile">Create a new file</a>
+    <ul>
+        {{range .}}
+        <li><a href="/view?filename={{.}}">{{.}}</a></li>
+        {{end}}
+    </ul>
+
+</body>
+</html>
