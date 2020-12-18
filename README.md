@@ -6,6 +6,7 @@ Endpoints:
 2. /view
 3. /update
 4. /newfile
+5. /delete
 
 Port: 8080
 
