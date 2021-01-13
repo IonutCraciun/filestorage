@@ -2,19 +2,21 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/IonutCraciun/filestorage/data"
+	"github.com/IonutCraciun/filestorage/lib/rabbitmqhandler"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/IonutCraciun/filestorage/data"
 )
 
 var tpl *template.Template
+var rabbitMessager *rabbitmqhandler.MessagerRabbitmq
 
 func init() {
 	tpl = template.Must(template.ParseGlob("templates/*.html"))
+	rabbitMessager = rabbitmqhandler.NewMessageHandler() // default
 }
 
 // Index function
@@ -69,6 +71,10 @@ func UpdateFile(w http.ResponseWriter, r *http.Request) {
 	f := data.File{Title: fileName, Body: []byte(body), Cookie: ""}
 	tpl.ExecuteTemplate(w, "fileUpdated.html", f)
 
+	err = rabbitMessager.Send("file.update", "File", fileName, "was updated")
+	if err != nil {
+		log.Printf("Error sending updateFile to rabbitMessager for file: %s", fileName)
+	}
 }
 
 // NewFile create a new file
@@ -93,6 +99,11 @@ func NewFile(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			tpl.ExecuteTemplate(w, "fileCreated.html", nil)
+
+			err = rabbitMessager.Send("file.create", "File", fileName, "was created and stored")
+			if err != nil {
+				log.Printf("Error sending newfile to rabbitMessager for file: %s", fileName)
+			}
 		}
 	default:
 		http.Error(w, "Server error. Method unknown", http.StatusInternalServerError)

@@ -7,8 +7,8 @@ import (
 
 // File struct
 type File struct {
-	Title string
-	Body  []byte
+	Title  string
+	Body   []byte
 	Cookie string
 }
 
@@ -16,9 +16,9 @@ type File struct {
 func GetAllFileNames() (titles []string) {
 	files, err := ioutil.ReadDir("files")
 	if err != nil {
-    	log.Fatal(err)
+		log.Fatal(err)
 	}
-	for _ , val := range files {
+	for _, val := range files {
 		titles = append(titles, val.Name())
 	}
 	return titles
